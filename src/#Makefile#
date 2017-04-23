@@ -1,0 +1,25 @@
+all: shs amos/libamos.a
+.PHONY: all
+
+CFLAGS = -Wall -fopenmp -ffast-math -fomit-frame-pointer -g  -std=c++11 -O3
+LIBS = -lblas -llapack -L./amos -lamos
+CC = g++
+FORTRAN = gfortran -O3
+
+clean:
+	make -C amos clean
+	rm -f *.o
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $<
+
+amos/libamos.a:
+	make -C amos
+
+MATRIX_O = DenseMatrix.o MatrixBase.o Rk.o MatrixOperations.o ReferenceCountingPointer.o SparseBLAS.o
+
+
+SPHEREHALFSPACE_O = SHS.cpp SphereHalfspace.o Bessel.o SI.o Silica.o SilicaMIT.o SiliconCarbide.o SiliconDoped.o MathUtils.o zpmn.o $(MATRIX_O) 
+
+shs: $(SPHEREHALFSPACE_O) amos/libamos.a
+	$(CC) -o shs $(SPHEREHALFSPACE_O) $(LIBS) $(CFLAGS)

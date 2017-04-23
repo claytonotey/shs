@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: shs
+Description: Sphere-halfspace heat transfer
+Version: @VERSION@
+Libs: -L${libdir} -lqiano
+Cflags: -I${includedir}
