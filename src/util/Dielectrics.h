@@ -38,6 +38,7 @@ class Dielectrics {
   ~Dielectrics();
   static Dielectric *getDielectric(const std::string &s, const Params &params);
   static Dielectric *getDielectric(const std::string &s);
+  static Dielectric *parseDielectric(const std::string &s);
   static DielectricRegistry registry;
 };
 

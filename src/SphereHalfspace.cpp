@@ -744,14 +744,14 @@ void SHS(Real a, Real gap, Real freq0, Real freq1, Real kappa0, Real kappa1, Rea
   if(freq1 > 0) {
     // quadrature
     quadgk715<Real> quad;  
-    
     double reltol = 1e-12;
     double abstol = 1e-30;
     double S = quad.integrate(&f, freq0, freq1, reltol, abstol, 4, false);
-    
     printf("%g %g %g %g\n", a, gap, 0.0, S);
   } else {
-    
+    Real feV = freq0;
+    Real S = SphereHalfspaceIntegrand(a, gap, feV, diel1, diel2, T1, T2, eta, kappa0, kappa1, kappa2);   
+    printf("%g %g %g %g\n", a, gap, feV, S); 
   }
 
         

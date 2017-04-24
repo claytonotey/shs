@@ -7,53 +7,9 @@ using namespace std;
 
 void usage() 
 {
-  fprintf(stderr,"Usage: shs radius(m) gap(m) fmin(eV) fmax(eV) T1(K) T2(K) dielectric1 dielectric2 [kappa0 kappa1 kappa2 eta]\n  Dielectrics are specified asone of {SiC, SiN, Au, Al, SiliconDoped(N=?carrier/m^3)}.");
+  fprintf(stderr,"Usage: shs radius(m) gap(m) fmin(eV) fmax(eV) T1(K) T2(K) dielectric1 dielectric2 [kappa0 kappa1 kappa2 eta]\n  Dielectrics are specified as one of {SiC, SiO2, SiN, Au, Al, SiliconDoped(N=?carrier/m^3)}.");
 }
 
-
-Params parseParams(const string &s) 
-{
-  Params params;
-  int pos0 = 0;
-  int pos1;
-  int pos2;
-  do {
-    pos1 = s.find_first_of("=", pos0);
-    pos2 = s.find_first_of(",", pos1);
-    if(pos1 == string::npos) {
-      usage();
-      exit(-1);
-    } else {
-      string key = s.substr(pos0,pos1-pos0);
-      string val = s.substr(pos1+1,pos2-pos1-1);
-      params[key] = Params::parseParam(val);
-    }
-    if(pos2 == string::npos) {
-      break;
-    }
-    pos0 = pos2+1;
-  } while(true);
-  return params;
-}
-
-Dielectric *parseDielectric(const string &s)
-{
-  int pos = s.find_first_of("(");
-   if(pos == string::npos) {
-     return Dielectrics::getDielectric(s);
-   } else {
-     string name = s.substr(0,pos);
-     int pos2 = s.find_first_of(")");
-     if(pos2 == string::npos) {
-       usage();
-       exit(-1);
-     } else {
-       string param = s.substr(pos+1, pos2-pos-1);
-       Params params = parseParams(param);
-       return Dielectrics::getDielectric(name, params);
-     }
-   }
-}
 
 int main(int argc, char **argv) {
    Real a;
@@ -78,8 +34,8 @@ int main(int argc, char **argv) {
    T1 = atof(argv[5]);
    T2 = atof(argv[6]);
    
-   Dielectric *diel1 = parseDielectric(string(argv[7]));
-   Dielectric *diel2 = parseDielectric(string(argv[8]));
+   Dielectric *diel1 = Dielectrics::parseDielectric(string(argv[7]));
+   Dielectric *diel2 = Dielectrics::parseDielectric(string(argv[8]));
 
    if(argc > 9) {
      if(argc < 13) {

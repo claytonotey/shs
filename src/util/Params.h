@@ -67,6 +67,7 @@ struct ParamMap
 class Params {
 public:
   Params();
+  Params(const std::string &s);
   static ParamValue parseParam(const std::string &name);
   ParamMap::type params;
 

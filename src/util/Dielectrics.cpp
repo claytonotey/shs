@@ -74,3 +74,20 @@ DielectricRegistry :: ~DielectricRegistry()
   }
 }
 
+Dielectric *Dielectrics :: parseDielectric(const string &s)
+{
+  int pos = s.find_first_of("(");
+   if(pos == string::npos) {
+     return Dielectrics::getDielectric(s);
+   } else {
+     string name = s.substr(0,pos);
+     int pos2 = s.find_first_of(")");
+     if(pos2 == string::npos) {
+       throw invalid_argument("exception parsing dielectric");
+     } else {
+       string param = s.substr(pos+1, pos2-pos-1);
+       Params params(param);
+       return Dielectrics::getDielectric(name, params);
+     }
+   }
+}

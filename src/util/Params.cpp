@@ -62,3 +62,25 @@ bool Params::operator==(const Params& other) const {
 bool Params :: operator!=(const Params& other) const {
   return !(*this == other);
 }
+
+Params :: Params(const string &s) 
+{
+  int pos0 = 0;
+  int pos1;
+  int pos2;
+  do {
+    pos1 = s.find_first_of("=", pos0);
+    pos2 = s.find_first_of(",", pos1);
+    if(pos1 == string::npos) {
+      throw invalid_argument("exception parsing parameters");
+    } else {
+      string key = s.substr(pos0,pos1-pos0);
+      string val = s.substr(pos1+1,pos2-pos1-1);
+      (*this)[key] = Params::parseParam(val);
+    }
+    if(pos2 == string::npos) {
+      break;
+    }
+    pos0 = pos2+1;
+  } while(true);
+}

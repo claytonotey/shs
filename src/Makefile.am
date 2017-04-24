@@ -17,7 +17,7 @@ shs_SOURCES = SHS.cpp SphereHalfspace.cpp
 shsmpi_SOURCES = SHSMPI.cpp SphereHalfspaceMPI.cpp
 
 if HAVE_MPI
-bin_PROGRAMS = shs 
-else
 bin_PROGRAMS = shs shsmpi
+else
+bin_PROGRAMS = shs
 endif
