@@ -678,43 +678,47 @@ double Theta(double w, double T) {
   return SI::hbar * w / (exp(SI::hbar * w / (SI::kb * T)) - 1.0);
 }
 
+
+Real SphereHalfspaceIntegrand(Real a, Real gap, Real feV, Dielectric *diel1, Dielectric *diel2, Real T1, Real T2, Real eta, Real kappa0, Real kappa1, Real kappa2) 
+{
+  double omega = feV * SI::eV / SI::hbar;
+  Real kf = omega / SI::c;
+  int nmax = lrintf(kappa0 + kappa1 * a / gap + kappa2 * kf * (a + gap));        
+  Complex eps1 = diel1->eps(feV);
+  Complex eps2 = diel2->eps(feV);
+
+  
+  int tinyCount = 0;
+  Real S = 0.0;
+  for(int m=0; m<=nmax; m++) {
+    Real Sw = SphereHalfSpaceEH(a, gap, omega, eps1, eps2, m, nmax, eta);       
+    if(Sw * (Real)(m+1) < 1e-6 * S) {
+      tinyCount++;
+      if(tinyCount > 4) break;
+    } else {
+      tinyCount = 0;
+    }
+    S += Sw;
+  }
+  
+  S *= (Theta(omega,T1) - Theta(omega, T2)) * 2. / PI * Square(omega * a / SI::c);
+  S *= SI::eV / SI::hbar;
+   
+  return S;
+}
+ 
 class wIntegrand : public Function<Real> 
 {
 public:
-    
+  
   wIntegrand(Real a, Real gap, Real kappa0, Real kappa1, Real kappa2, Real eta, Dielectric *diel1, Dielectric *diel2, Real T1, Real T2) : a(a), gap(gap), kappa0(kappa0), kappa1(kappa1), kappa2(kappa2), eta(eta), diel1(diel1), diel2(diel2), T1(T1), T2(T2) {}
 
   void f(int nx, Real *x, Real *y) {
-
     for(int i=0; i<nx; i++) {
-        double feV = x[i];
-        double omega = feV * SI::eV / SI::hbar;
-        Real kf = omega / SI::c;
-        int nmax = lrintf(kappa0 + kappa1 * a / gap + kappa2 * kf * (a + gap));        
-
-        Complex eps1 = diel1->eps(feV);
-        Complex eps2 = diel2->eps(feV);
-
-
-        int tinyCount = 0;
-        Real S = 0.0;
-        for(int m=0; m<=nmax; m++) {
-          Real Sw = SphereHalfSpaceEH(a, gap, omega, eps1, eps2, m, nmax, eta);       
-          if(Sw * (Real)(m+1) < 1e-6 * S) {
-            tinyCount++;
-            if(tinyCount > 4) break;
-          } else {
-            tinyCount = 0;
-          }
-          S += Sw;
-        }
-
-        S *= (Theta(omega,T1) - Theta(omega, T2)) * 2. / PI * Square(omega * a / SI::c);
-        S *= SI::eV / SI::hbar;
-        
-        fprintf(stderr,"%g %g %g %g\n",a,gap,feV,S);
-        y[i] = S;
-
+      double feV = x[i];        
+      Real S = SphereHalfspaceIntegrand(a, gap, feV, diel1, diel2, T1, T2, eta, kappa0, kappa1, kappa2);
+      fprintf(stderr,"%g %g %g %g\n",a,gap,feV,S);
+      y[i] = S;
     }
   }
   
@@ -731,38 +735,23 @@ public:
 };
 
 
-void SHS(vector<Real> &as, vector<Real> &gaps, Real freq0, Real freq1, Real kappa0, Real kappa1, Real kappa2, Real eta, Dielectric *diel1, Dielectric *diel2, double T1, double T2)
+void SHS(Real a, Real gap, Real freq0, Real freq1, Real kappa0, Real kappa1, Real kappa2, Real eta, Dielectric *diel1, Dielectric *diel2, double T1, double T2)
 {
   initReferenceCountingPointerLock();
 
-
+  wIntegrand f(a, gap, kappa0, kappa1, kappa2, eta, diel1, diel2, T1, T2);
   
-  for(int i=0; i< (int)as.size(); i++) {
-    double a = as[i];
-    for(int j=0; j< (int)gaps.size(); j++) {
-      double gap = gaps[j];
-
-      wIntegrand f(a, gap, kappa0, kappa1, kappa2, eta, diel1, diel2, T1, T2);
-       
-      // quadrature
-      quadgk715<Real> quad;  
-      
-      double reltol = 1e-12;
-      double abstol = 1e-30;
-      double S = quad.integrate(&f, freq0, freq1, reltol, abstol, 4, false);
-      
-      printf("%g %g %g %g\n", a, gap, 0.0, S);
-      
-
-      /*
-      for(int k=0; k< (int)freqs.size(); k++) {
-        double feV = freqs[i];
-        double S;
-        f.f(1,&feV,&S);
-        printf("%g %g %g %g\n", a, gap, feV, S);
-      }
-      */
-    }
+  if(freq1 > 0) {
+    // quadrature
+    quadgk715<Real> quad;  
+    
+    double reltol = 1e-12;
+    double abstol = 1e-30;
+    double S = quad.integrate(&f, freq0, freq1, reltol, abstol, 4, false);
+    
+    printf("%g %g %g %g\n", a, gap, 0.0, S);
+  } else {
+    
   }
 
         

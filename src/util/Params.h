@@ -11,10 +11,10 @@ public:
 
   enum ParamType {
     ParamNULL = 0,
-    ParamString,
-    ParamFloat,
-    ParamInt,
-    ParamComplex
+    ParamString = 1,
+    ParamFloat = 6,
+    ParamInt = 10,
+    ParamComplex = 2
   };
 
   virtual size_t hash() const { return 0; }
@@ -40,14 +40,14 @@ public:
 
 class ParamInt : public ParamValue {
 public:
- ParamInt(int val) : ParamValue(ParamValue::ParamInt) { i = val;}
+ ParamInt(int val) : ParamValue(ParamValue::ParamInt) { z = val; i = val;}
   operator bool() const { return i; }
   size_t hash() const { return i; }
 };
 
 class ParamFloat: public ParamValue {
 public:
- ParamFloat(double val) : ParamValue(ParamValue::ParamFloat) { f = val;}
+ ParamFloat(double val) : ParamValue(ParamValue::ParamFloat) { z = val; f = val;}
   operator bool() const { return f; }
   size_t hash() const { return f; }
 };

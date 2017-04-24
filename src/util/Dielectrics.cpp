@@ -15,6 +15,7 @@ DielectricRegistry Dielectrics :: registry;
 Dielectric *Dielectrics :: getDielectric(const std::string &s)
 {
   const DielectricKey key = DielectricKey(s,Params());
+  cerr << "Choosing " << s << "\n";
   return registry.the[key];
 }
 
@@ -23,7 +24,7 @@ Dielectric *Dielectrics :: getDielectric(const std::string &s, const Params &par
   Dielectric *diel;
   const DielectricKey key = DielectricKey(s,params);
   diel = registry.the[key];
-
+     
   if(!diel) {
     if(s == "SiliconDoped") {
       Real N = 0;
@@ -31,6 +32,7 @@ Dielectric *Dielectrics :: getDielectric(const std::string &s, const Params &par
       if(Np.type == ParamValue::ParamFloat) {
         N = Np.f;
       }
+      cerr << "Choosing Silicon Doped with N = " << N << "\n";
       diel = new SiliconDoped(N);
     }
   }
@@ -39,13 +41,15 @@ Dielectric *Dielectrics :: getDielectric(const std::string &s, const Params &par
     Complex eps(1.0,0);
     Complex mu(1.0,0);
     ParamValue epsP = params["eps"];
-    if(epsP.type == ParamValue::ParamComplex) {
+    if(epsP.type & ParamValue::ParamComplex) {
       eps = epsP.z;
     } 
     ParamValue muP = params["mu"];
-    if(muP.type == ParamValue::ParamComplex) {
+    if(muP.type & ParamValue::ParamComplex) {
       mu = muP.z;
     }
+    cerr << "Choosing constant dielectric with eps=" << eps << " mu=" << mu << 
+"\n";
     diel = new ConstantDielectric(eps,mu);
   }
 
@@ -56,6 +60,7 @@ Dielectric *Dielectrics :: getDielectric(const std::string &s, const Params &par
 
 DielectricRegistry :: DielectricRegistry()
 {
+  the[DielectricKey(string("SiO2"),Params())] = new Silica();
   the[DielectricKey(string("SiN"),Params())] = new SiN();
   the[DielectricKey(string("SiC"),Params())] = new SiC();
   the[DielectricKey(string("Al"),Params())] = new Al();

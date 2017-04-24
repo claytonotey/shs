@@ -402,21 +402,8 @@ Real cubicHermiteSplineInterpolate(Real *xtab, Real *ytab, int n, int k, Real x)
 
 Complex parseComplex(const string &s)
 {
-  return parseComplex(s.c_str());
-}
-
-Complex parseComplex(char *str)
-{
-  char *s = str;
-
-  while(*s == ' ') s++; 
-  if(*s == 0) throw invalid_argument("Invalid Complex argument");
-  Real r = atof(s);
-  while(*s != '+' && *s != '-') s++; 
-  while(*s == '+') s++; 
-  if(*s == 0) throw invalid_argument("Invalid Complex argument");
-  Real i = atof(s);
-
-  Complex result(r,i);
-  return result;
+  size_t ptr;
+  Real r = stof(s, &ptr);
+  Real i = stof(s.substr(ptr));
+  return Complex(r,i);
 }

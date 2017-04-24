@@ -27,14 +27,14 @@ ParamValue Params :: parseParam(const std::string &s)
   } catch(std::invalid_argument e) {
     try {
       int i = std::stoi(s);
-      return ParamInt(i);
-    } catch(std::invalid_argument e) {
-      try {
-        double f = std::stof(s);
+      double f = std::stof(s);
+      if(i == f) {
+           return ParamInt(i);
+      } else {
         return ParamFloat(f);
-      } catch(std::invalid_argument e) {
-        return ParamString(s);
       }
+    } catch(std::invalid_argument e) {
+      return ParamString(s);
     }
   }
   return paramNULLInst;
@@ -54,7 +54,6 @@ ParamValue Params :: operator[](const std::string &s) const {
 ParamValue &Params :: operator[](const std::string &s) {
   return params[s];
 }
-
 
 bool Params::operator==(const Params& other) const {
   return params == other.params;

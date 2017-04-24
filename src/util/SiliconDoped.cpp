@@ -1,12 +1,14 @@
 #include "SiliconDoped.h"
 #include "SI.h"
+#include <iostream>
 
-SiliconDoped :: SiliconDoped(Real N) : N(N) {}
+SiliconDoped :: SiliconDoped(Real N) : N(N) { cerr << "hi\n"; }
 
 Complex SiliconDoped :: eps(Real eV)
 {
   Real omega = eV * SI::eV / SI::hbar;
   if(N < 0.0) {
+    //ntype
     Real mu1 = .00685;
     Real mumax = .1414;
     Real mu2 = .00561;
@@ -18,6 +20,7 @@ Complex SiliconDoped :: eps(Real eV)
     Real mu = mu1 + (mumax - mu1) / (1 + pow(fabs(N) / Cr, alpha)) - mu2 / (1 + pow(Cs / fabs(N), beta));
     Real omegap = SI::eV * sqrt(fabs(N) / m / SI::eps0);
     Real gamma = SI::eV / m / mu;
+    cerr << (Real)11.7 - omegap * omegap / (omega * (omega + Complex(0.,gamma))) << "\n";
     return (Real)11.7 - omegap * omegap / (omega * (omega + Complex(0.,gamma)));
   } else if(N > 0.0) {
     // ptype

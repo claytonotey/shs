@@ -106,8 +106,6 @@ inline Real norm2(const Complex &z)
 */
 
 Complex parseComplex(const string &s);
-Complex parseComplex(char *str);
-
 
 inline Complex Itothe(int n)
 {
