@@ -36,7 +36,7 @@ AC_DISABLE_SHARED dnl allows for optimizations
 SHARED_VERSION_INFO="0:0:0"
 
 
-AM_PROG_LIBTOOL
+LT_INIT
 
 cxxflags_save="$CXXFLAGS"
 AC_LANG([C++])

@@ -13,8 +13,8 @@ shs_LDFLAGS = $(os_ldflags)
 shsmpi_LDADD = libshs.la ./util/libutil.la amos/libamos.la -lblas -llapack
 shsmpi_LDFLAGS = $(os_ldflags)
 
-shs_SOURCES = SHS.cpp SphereHalfspace.cpp
-shsmpi_SOURCES = SHSMPI.cpp SphereHalfspaceMPI.cpp
+shs_SOURCES = shs.cpp SphereHalfspace.cpp
+shsmpi_SOURCES = shsmpi.cpp SphereHalfspaceMPI.cpp
 
 if HAVE_MPI
 bin_PROGRAMS = shs shsmpi
